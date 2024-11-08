@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"snaptext_go/internal/database"
 	"snaptext_go/internal/shortcuts"
+	"strings"
 )
 
 func main() {
@@ -22,9 +25,19 @@ func main() {
 		switch choice {
 		case 1:
 			var code, text string
-			fmt.Print("Write a Snap code")
-			fmt.Scan(&code)
-			fmt.Print("Write a Snap text block")
+			fmt.Print("Write a Snap code! ")
+			scanner := bufio.NewScanner(os.Stdin)
+			for scanner.Text() == "" {
+				scanner.Scan()
+				code = strings.TrimLeft(scanner.Text(), " ")
+				if code == "" {
+				fmt.Println("No empty code.")
+				} else {
+					break
+				}
+			}
+
+			fmt.Print("Write a Snap text block: ")
 			fmt.Scan(&text)
 			err := shortcuts.AddShortcut(db, code, text)
 			if err != nil {
