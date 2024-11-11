@@ -1,6 +1,7 @@
 package shortcuts
 
 import (
+	
 	"database/sql"
 )
 
@@ -13,6 +14,8 @@ type Shortcut struct {
 func AddShortcut(db *sql.DB, code, text string) error {
 	_, err := db.Exec("INSERT INTO shortcuts (code, text) VALUES (?, ?)", code, text)
 	return err
+
+	   
 }
 
 func ListShortcuts(db *sql.DB) ([]Shortcut, error) {
