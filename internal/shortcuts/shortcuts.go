@@ -1,8 +1,8 @@
 package shortcuts
 
 import (
+	
 	"database/sql"
-	"fmt"
 )
 
 type Shortcut struct {
@@ -12,12 +12,10 @@ type Shortcut struct {
 }
 
 func AddShortcut(db *sql.DB, code, text string) error {
-	if code == "" || text == "" {
-		return fmt.Errorf("code and text cannot be empty")
-	}
-
 	_, err := db.Exec("INSERT INTO shortcuts (code, text) VALUES (?, ?)", code, text)
 	return err
+
+	   
 }
 
 func ListShortcuts(db *sql.DB) ([]Shortcut, error) {
@@ -42,3 +40,5 @@ func DeleteShortcut(db *sql.DB, id int) error {
 	_, err := db.Exec("DELETE FROM shortcuts WHERE id = ?", id)
 	return err
 }
+
+
