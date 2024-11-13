@@ -1,12 +1,24 @@
-package shortcuts_test
+package shortcuts
 
 import (
 	"database/sql"
-	"snaptext_go/internal/shortcuts"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+// Estrutura para os casos de teste
+type valueTest struct {
+	code, text string
+	expectErr  bool
+}
+
+var valuesTest = []valueTest{
+	{"//mail", "mail@mail.com", false},     // Inserção válida
+	{"", "text", true},                     // Erro esperado: código vazio
+	{"//code", "", true},                   // Erro esperado: texto vazio
+	{"//mail", "other@mail.com", true},     // Erro esperado: duplicado
+}
 
 func TestAddShortcut(t *testing.T) {
 	db, err := sql.Open("sqlite3", ":memory:")
@@ -15,6 +27,7 @@ func TestAddShortcut(t *testing.T) {
 	}
 	defer db.Close()
 
+	// Criar tabela em memória
 	_, err = db.Exec(`
         CREATE TABLE shortcuts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,18 +39,17 @@ func TestAddShortcut(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	err = shortcuts.AddShortcut(db, "//mail", "mail@mail.com")
-	if err != nil {
-		t.Errorf("expected no error, got %v", err)
-	}
+	for _, test := range valuesTest {
+		err := AddShortcut(db, test.code, test.text)
 
-	var code, text string
-	err = db.QueryRow("SELECT code, text FROM shortcuts WHERE code = ?", "//mail").Scan(&code, &text)
-	if err != nil {
-		t.Errorf("expected no error fetching shortcut, got %v", err)
+		if test.expectErr {
+			if err == nil {
+				t.Errorf("expected error but got nil for code: %q, text: %q", test.code, test.text)
+			}
+		} else {
+			if err != nil {
+				t.Errorf("expected no error but got %v for code: %q, text: %q", err, test.code, test.text)
+			}
+		}
 	}
-	if code != "//mail" || text != "mail@mail.com" {
-		t.Errorf("expected code: %s, text: %s; got code: %s, text: %s", "//mail", "mail@mail.com", code, text)
-	}
-
 }
