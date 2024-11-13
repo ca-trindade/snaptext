@@ -7,17 +7,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Estrutura para os casos de teste
 type valueTest struct {
 	code, text string
 	expectErr  bool
 }
 
 var valuesTest = []valueTest{
-	{"//mail", "mail@mail.com", false},     // Inserção válida
-	{"", "text", true},                     // Erro esperado: código vazio
-	{"//code", "", true},                   // Erro esperado: texto vazio
-	{"//mail", "other@mail.com", true},     // Erro esperado: duplicado
+	{"//mail", "mail@mail.com", false},
+	{"", "text", true},
+	{"//code", "", true},
+	{"//mail", "other@mail.com", true},
 }
 
 func TestAddShortcut(t *testing.T) {
@@ -27,7 +26,7 @@ func TestAddShortcut(t *testing.T) {
 	}
 	defer db.Close()
 
-	// Criar tabela em memória
+
 	_, err = db.Exec(`
         CREATE TABLE shortcuts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
