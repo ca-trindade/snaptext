@@ -38,13 +38,23 @@ func main() {
 			}
 
 			fmt.Print("Write a Snap text block: ")
-			fmt.Scan(&text)
-			err := shortcuts.AddShortcut(db, code, text)
+			scanner = bufio.NewScanner(os.Stdin)
+			for scanner.Text() == "" {
+				scanner.Scan()
+				text = strings.TrimLeft(scanner.Text(), " ")
+				if text == "" {
+				fmt.Println("No empty text.")
+				} else {
+					break
+				}
+			}
+err := shortcuts.AddShortcut(db, code, text)
 			if err != nil {
 				fmt.Println("Error adding Snap code:", err)
 			} else {
 				fmt.Println("Snaptext added!")
 			}
+
 		case 2:
 			shortcuts, err := shortcuts.ListShortcuts(db)
 			if err != nil {
@@ -52,7 +62,7 @@ func main() {
 			} else {
 				fmt.Println("Snaptexts:")
 				for _, s := range shortcuts {
-					fmt.Printf("ID: %d, Código: %s, Texto: %s\n", s.ID, s.Code, s.Text)
+					fmt.Printf("ID: %d, Code: %s, Text: %s\n", s.ID, s.Code, s.Text)
 				}
 			}
 
